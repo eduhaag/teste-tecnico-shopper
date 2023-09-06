@@ -1,14 +1,8 @@
-import { Router, Request, Response } from 'express'
+import { Router} from 'express'
 import { ProductsController } from '../controllers/ProductsController'
-import { ProductsDatabase } from '../database/ProductsDatabase'
 
 export const productsRouter = Router()
 
-productsRouter.post('/update/file', async (req:Request, res: Response)=>{
-  const productDatabase = new ProductsDatabase()
-  const pControler = new ProductsController(productDatabase)
+const productsController = new ProductsController()
 
-  const products = await pControler.getProducts(req.body.ids)
-
-  return res.json(products).send()
-})
+productsRouter.post('/update/send-file', productsController.getProducts)

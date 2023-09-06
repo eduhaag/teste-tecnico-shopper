@@ -1,20 +1,19 @@
-import { Database } from "./Database";
+import { knex } from "../database"
 
-export class PackagesDatabase extends Database {
+export class PackagesDatabase {
   private static TABLE = 'packs'
 
-  public async getPacksByIds(idList: number[]){
-    const packs = await Database.connection()
+  public async getPackItens(packId: number){
+    const packs = await knex(PackagesDatabase.TABLE)
       .select('*')
-      .from(PackagesDatabase.TABLE)
-      .whereIn('pack_id', idList)
+      .where('pack_id', packId)
 
     return packs
   }
 
   public async getPacksByProduct(productId: number) {
-    const packs = await Database.connection()
-      .select('*').from(PackagesDatabase.TABLE)
+    const packs = await knex(PackagesDatabase.TABLE)
+      .select('*')
       .where({product_id: productId})
     
     return packs
