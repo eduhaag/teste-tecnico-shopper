@@ -2,11 +2,9 @@ import { PackagesDatabase } from "../database/PackagesDatabase";
 import { ProductsDatabase } from "../database/ProductsDatabase";
 import { IProduct } from "../model/Product";
 
-interface IValidateRequest {
-  products: {
-    productId: number
-    newPrice: number
-  }[]
+export interface IValidateRequest {
+  productId: number
+  newPrice: number
 }
 
 interface IValidateProducts {
@@ -31,7 +29,7 @@ export class ValidateProductUpdateService {
     private packDatabase: PackagesDatabase,
   ){}
 
-  public async validate({ products }: IValidateRequest) {
+  public async validate(products: IValidateRequest[]) {
     const ids = products.map(item => item.productId)
     const response = await this.productsDatabase.listProductsByIds(ids) as IProduct[]
 
