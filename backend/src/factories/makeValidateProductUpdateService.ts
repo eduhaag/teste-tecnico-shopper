@@ -1,12 +1,12 @@
 import { ValidateProductUpdateService } from "../Services/ValidateProductUpdateService";
 import { ProductsController } from "../controllers/ProductsController";
-import { PackagesDatabase } from "../database/PackagesDatabase";
-import { ProductsDatabase } from "../database/ProductsDatabase";
+import { PacksRepository } from "../repositories/PacksRepository.ts";
+import { ProductsRepository } from "../repositories/ProductsRepositoy";
 
 export function makeValidateProductUpdateService() {
-  const productsDatabase = new ProductsDatabase()
-  const packsDatabase = new PackagesDatabase()
-  const service = new ValidateProductUpdateService(productsDatabase, packsDatabase)
+  const productsRepository = new ProductsRepository()
+  const packsRepository = new PacksRepository()
+  const service = new ValidateProductUpdateService(productsRepository, packsRepository)
   
   return service
 }

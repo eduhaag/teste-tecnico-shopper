@@ -1,146 +1,164 @@
-import { PackagesDatabase } from "../database/PackagesDatabase";
-import { ProductsDatabase } from "../database/ProductsDatabase";
-import { IProduct } from "../model/Product";
+import { ProductsRepository } from "../repositories/ProductsRepositoy";
+import { PacksRepository } from "../repositories/PacksRepository.ts";
+import { Pack } from "../model/Pack";
 
 export interface IValidateRequest {
   productId: number
   newPrice: number
 }
 
-interface IValidateProducts {
-  id: number,
+interface ICheckedProduct {
+  code: number,
   name?: string,
   cost?: number,
   oldPrice?: number,
   newPrice: number,
+  isRegistred?: boolean //Produto encontrado no banco de dados?
+  isPack?: boolean, 
   errors: string[]
 }
 
-interface ICheckPacksRules {
-  packToUpdate: IValidateProducts,
-  packItens?: IPackItem[]
-}
-
 export class ValidateProductUpdateService {
-  private products: IValidateProducts[] = []
 
   constructor(
-    private productsDatabase: ProductsDatabase,
-    private packDatabase: PackagesDatabase,
+    private productsRepository: ProductsRepository,
+    private packsRepository: PacksRepository,
   ){}
 
-  public async validate(products: IValidateRequest[]) {
-    const ids = products.map(item => item.productId)
-    const response = await this.productsDatabase.listProductsByIds(ids) as IProduct[]
+  public async validate(productsToValidate: IValidateRequest[]): Promise<ICheckedProduct[]>{
+    const ids = productsToValidate
+      .filter(item => typeof(item.productId)==='number' )
+      .map(item => item.productId)
+    const products = await this.productsRepository.listProductsByIds(ids) 
 
-    products.forEach(item => {
-      const productInDb = response.find(product => product.code===item.productId)
+    const checkedProducts = Promise.all(
+      productsToValidate.map(async productToValidate => {
+        const product = products.find(item => item.code() === productToValidate.productId)
 
-      let product: IValidateProducts = {
-        id: item.productId,
-        newPrice: item.newPrice,
-        errors: []
+        const productToCheck: ICheckedProduct = {
+          code: productToValidate.productId,
+          newPrice: productToValidate.newPrice,
+          errors: []
+        }
+
+        if(product) {
+          productToCheck.name = product.name()
+          productToCheck.cost = product.cost()
+          productToCheck.oldPrice = product.price()
+          productToCheck.isRegistred = true
+        } else {
+          productToCheck.errors.push('Produto não cadastrado')
+        }
+
+        // checa as regras
+        this.checkFormatNewPrice(productToCheck)
+        this.checkPriceGreaterThanCost(productToCheck)
+        this.checkAdjustmentInLimit(productToCheck)
+
+
+        // validações relacionadas a packs
+        if(productToCheck.isRegistred){
+              
+          await this.checkProductComposePack(productsToValidate, productToCheck)
+
+          await this.checkPackRules(productsToValidate, productToCheck)
+
+
+        }       
+
+        return productToCheck
+      })
+    )
+
+    return checkedProducts
+  }
+
+  private checkFormatNewPrice(product: ICheckedProduct) {
+    if(!product.newPrice && typeof(product.newPrice)!=='number'){
+      product.errors.push('Novo preço ausente ou formato inválido.')
+    }
+  }
+
+  private checkPriceGreaterThanCost(product: ICheckedProduct) {
+    if(product.cost && product.newPrice < product.cost){
+      product.errors.push('Novo preço abaixo do preço de custo.')
+    }
+  }
+
+  private checkAdjustmentInLimit(product: ICheckedProduct) {
+    const INCREMENT_ADJUSTMENT_LIMIT = 1.1 // incremento maximo de +10%
+    const DECREMENT_ADJUSTMENT_LIMIT = 0.9 // incremento maximo de -10%
+
+    if(product.oldPrice && 
+      product.newPrice > product.oldPrice * INCREMENT_ADJUSTMENT_LIMIT) {
+      product.errors.push('O aumento é superior a 10% do preço atual.')
+    }
+
+    if(product.oldPrice && 
+       product.newPrice < product.oldPrice * DECREMENT_ADJUSTMENT_LIMIT) {
+      product.errors.push('A redução no preço é superior a 10% do preço atual.')
+    }
+
+  }
+
+  private async checkProductComposePack (productsToValidate: IValidateRequest[], product: ICheckedProduct) {
+    const packsWithThisProduct = await this.packsRepository.getPacksByProductId(product.code)
+
+    packsWithThisProduct.forEach(pack => {
+      if(!productsToValidate.some(item => item.productId === pack.packId())){
+        product.errors.push(`Para atualizar este produto o pack ${pack.packId()} também deve ser atualizado.`)
       }
-
-      if(productInDb){
-        product.name = productInDb.name
-        product.cost = productInDb.cost_price
-        product.oldPrice = productInDb.sales_price
-      }else {
-        product.errors?.push('Produto não cadastrado')
-      }
-
-      this.products.push(product)
     })
-
-    await this.validateProductsRules()
-
-    return this.products
   }
 
-  private async validateProductsRules(): Promise<any> {
-   const products = Promise.all(this.products.map(async product => {
+  private async checkPackRules(produtsToValidate: IValidateRequest[], product: ICheckedProduct) {
 
-      if(!product.newPrice && typeof(product.newPrice) === 'number'){
-        product.errors.push('O valor do campo `new_price` é inválido.')
+    
+    const pack = await this.packsRepository.getPackById(product.code)
+    
+    if(pack) {
+      product.isPack = true
+
+      const composeItensWithOutUpdate: number[] = []
+      const componentsValues = {
+        cost: 0,
+        price: 0
       }
 
-      /* Se a prop product.name for undefined significa que o produto não está
-      cadastrado no banco de dados. */
-      if(product.errors.length === 0 && product.name){
-        if(product.newPrice < product.cost!){
-         product.errors.push('O novo preço está abaixo do custo do produto.')
+      /* Verifica se componentes do pack também estão sendo alterado e
+      se o preço do pack é igual a soma do preço dos componentes */
+      pack.packProducts().forEach(item => {
+        const packProduct = produtsToValidate.find(productToCheck => 
+          productToCheck.productId === item.product.code()
+        )
+
+        if(!packProduct) {
+          composeItensWithOutUpdate.push(item.product.code())
+        } else {
+          componentsValues.price += packProduct.newPrice * item.qty,
+          componentsValues.cost += item.product.cost() * item.qty
+        }
+      })
+
+      if(composeItensWithOutUpdate.length === 0) {
+        if(product.newPrice < componentsValues.cost) {
+          product.errors.push('Novo preço abaixo do preço de custo.')
         }
 
-        if(
-          product.newPrice > product.oldPrice! * 1.1 || 
-          product.newPrice < product.oldPrice! * 0.9){
-          product.errors.push('O reajuste é maior ou menor que 10% do preço atual.')
+        if(product.newPrice !== componentsValues.price) {
+          product.errors.push('O novo preço é diferente da soma do preço dos componentes do pack.')
         }
 
-
-        const checkProductIsPack = await this.packDatabase.getPackItens(product.id) as IPackItem[]
-        if(checkProductIsPack.length > 0) {
-          this.checkPacksRules({packToUpdate: product, packItens: checkProductIsPack})
-        }else {
-          // Verifica se o produto compõe algum pack
-          const checkIfItemCoposePacks = await this.packDatabase.getPacksByProduct(product.id)
-          if(checkIfItemCoposePacks.length > 0) {
-            checkIfItemCoposePacks.forEach(async pack=> {
-              const packToUpdate = this.products.find(item => item.id === pack.pack_id)
-
-              if(!packToUpdate){
-                product.errors.push(`Para alterar o preço deste produto, o preço do pacote ${pack.pack_id} também deve ser alterado.`)
-              } else {
-                await this.checkPacksRules({packToUpdate})
-              }
-            })
-          }
-        }
+        product.cost = componentsValues.cost
       } else {
-        product.errors.push('Produto não cadastrado.')
+        const msg = composeItensWithOutUpdate.length === 1 ? 'o produto' : 'os produtos'
+
+        product.errors.push(
+          `Para atualizar este pacote é necessário também atualizar ${msg} ${composeItensWithOutUpdate.join(', ')}`)
       }
-    }))
+    }
+  } 
 
-    return products
-  }
-
-  private async checkPacksRules({packToUpdate, packItens}: ICheckPacksRules): Promise<void> {
-    const packComponents = packItens || await this.packDatabase.getPackItens(packToUpdate.id)
-
-    const packItensIds = new Set(packComponents.map(item => item.product_id))
-    const componentsUpdated = this.products.filter(item => packItensIds.has(item.id))
-
-    /* checa se os components do pack também estão sendo alterados e checa se
-    a soma do preço dos componentes é igual ao preço do pack */
-    if(packComponents.length === componentsUpdated.length){
-
-      const componentsValues = componentsUpdated.reduce((acc, item) => {
-        const componentQty = packComponents.find(component => component.product_id===item.id).qty
-
-        acc.price += item.newPrice * componentQty
-        acc.cost += item.cost! * componentQty
-
-        return acc
-      }, {price: 0, cost: 0})
-
-      if(packToUpdate.newPrice !== componentsValues.price) {
-        packToUpdate.errors.push(
-          'Existe uma divergência entre o novo preço e a soma dos preços de seus componentes.')
-      }else{
-        if(packToUpdate.newPrice < componentsValues.cost){
-          packToUpdate.errors.push('O novo preço está abaixo dos custos dos componentes.')
-        }
-        packToUpdate.cost = componentsValues.cost
-      }
-            
-    } else {
-      const pluralMsg = packComponents.length > 1 ? 'os produtos ' : 'o produto'
-
-      packToUpdate.errors?.push(
-        `Para alterar o preço é necessário alterar também ${pluralMsg} id: ${packComponents.map(item=>item.product_id).join(', ')}`)
-    }    
-  }  
 }
 
 
