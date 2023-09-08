@@ -2,8 +2,9 @@ import { knex } from "../database"
 import { Product } from "../model/Product"
 
 interface UpdatePrice{
-  productId: number,
-  newPrice: number
+  code: number,
+  newPrice: number,
+  cost?: number
 }
 
 export class ProductsRepository  {
@@ -21,9 +22,9 @@ export class ProductsRepository  {
     return products
   }
 
-  public async updatePrice({productId, newPrice}: UpdatePrice) {
-    const product = await knex(ProductsRepository.TABLE)
-      .where(productId)
-      .update({'sales_price': newPrice})
+  public async updatePrice(data: UpdatePrice) {
+    await knex(ProductsRepository.TABLE)
+      .where(data.code)
+      .update(data)
   }
 }

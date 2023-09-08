@@ -1,4 +1,4 @@
-import { knex as setupKnex, Knex } from 'knex'
+import { Knex } from 'knex'
 
 export const config: Knex.Config = {
   client: 'mysql',

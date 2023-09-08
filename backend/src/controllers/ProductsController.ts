@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
-import { makeValidateProductUpdateService } from "../factories/makeValidateProductUpdateService";
 import fs from "fs";
+import { z } from 'zod'
+
 import { IValidateRequest } from "../Services/ValidateProductUpdateService";
+import { makeUpdatePricesService } from "../Services/factories/makeUpdatePricesService";
+import { makeValidateProductUpdateService } from "../Services/factories/makeValidateProductUpdateService";
 import { convertNumeric } from "../utils/convertNumeric";
+import { ValidationError } from "../Services/errors/ValidationError";
 
 
 export class ProductsController {
 
-  async getProducts(req: Request, res: Response){
+  async checkProducts(req: Request, res: Response){
     const { file } = req
 
     if(!file) {
@@ -57,7 +61,7 @@ export class ProductsController {
 
     const validateUpdateService = makeValidateProductUpdateService()
 
-    const checkedProducts = await validateUpdateService.validate(arrayFromCSV)
+    const checkedProducts = await validateUpdateService.execute(arrayFromCSV)
 
     const productsToResponse = checkedProducts.map(product => {
       return {
@@ -72,13 +76,46 @@ export class ProductsController {
     return res.json(productsToResponse)
 
    } catch(error) {
-    console.log(error)
-    return res.status(500).json({
-      ok: false,
-      message: 'Server error'
-    })
+    throw error
    }
  
+  }
+
+  async updateProducts(req: Request, res: Response) {
+    const dataSchema = z.object({
+      products: z.array(z.object({
+        code: z.number(),
+        newPrice: z.number()
+      }))
+    })
+
+    const { products } = dataSchema.parse(req.body)
+
+    const productsToUpdate = products.map(product => {
+      return {
+        productId: product.code,
+        newPrice: product.newPrice
+      }
+    })
+
+    try {
+      const updateService = makeUpdatePricesService()
+
+      await updateService.execute({products: productsToUpdate})
+
+      return res.status(204).send()
+
+    } catch (error) {
+      if(error instanceof ValidationError) {
+        return res.status(400).json({
+          ok: false,
+          message: error.message
+        })
+      }
+
+      throw error
+    }
+
   }
 
 }

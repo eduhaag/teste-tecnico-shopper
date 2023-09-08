@@ -1,6 +1,5 @@
 import { ProductsRepository } from "../repositories/ProductsRepositoy";
-import { PacksRepository } from "../repositories/PacksRepository.ts";
-import { Pack } from "../model/Pack";
+import { PacksRepository } from "../repositories/PacksRepository";
 
 export interface IValidateRequest {
   productId: number
@@ -25,7 +24,7 @@ export class ValidateProductUpdateService {
     private packsRepository: PacksRepository,
   ){}
 
-  public async validate(productsToValidate: IValidateRequest[]): Promise<ICheckedProduct[]>{
+  public async execute(productsToValidate: IValidateRequest[]): Promise<ICheckedProduct[]>{
     const ids = productsToValidate
       .filter(item => typeof(item.productId)==='number' )
       .map(item => item.productId)

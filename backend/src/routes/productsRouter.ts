@@ -11,4 +11,9 @@ const upload = multer({storage: multer.diskStorage({
 
 const productsController = new ProductsController()
 
-productsRouter.post('/update/send-file',upload.single('file'), productsController.getProducts)
+productsRouter.put('/update', productsController.updateProducts)
+
+productsRouter.post('/update/send-file', 
+  upload.single('file'), 
+  productsController.checkProducts
+)
