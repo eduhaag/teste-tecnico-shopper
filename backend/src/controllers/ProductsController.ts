@@ -49,6 +49,12 @@ export class ProductsController {
       })
     })
 
+    fs.unlink(file.path, (error) => {
+      if(error) {
+        console.log(`Falha ao excluir o arquivo ${file.filename} de /tmp.`)
+      }
+    })
+
     const validateUpdateService = makeValidateProductUpdateService()
 
     const checkedProducts = await validateUpdateService.validate(arrayFromCSV)
