@@ -11,7 +11,6 @@ import { ValidationError } from '../Services/errors/ValidationError'
 export class ProductsController {
   async checkProducts(req: Request, res: Response) {
     const { file } = req
-    console.log('chegou2', file)
 
     if (!file) {
       return res.status(400).json({

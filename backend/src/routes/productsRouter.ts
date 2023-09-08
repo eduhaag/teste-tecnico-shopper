@@ -13,8 +13,7 @@ const productsController = new ProductsController()
 
 productsRouter.put('/update', productsController.updateProducts)
 
-productsRouter.post('/update/send-file', (req, res) => {
-  upload.single('file')
-}, 
+productsRouter.post('/update/send-file',
+  upload.single('file'), 
   productsController.checkProducts
 )
