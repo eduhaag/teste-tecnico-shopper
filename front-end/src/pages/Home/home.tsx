@@ -36,10 +36,14 @@ export function Home() {
 
         setValidatedProducts(response.data)
       }
-      catch (error) {
+      catch (error:any ) {
         console.log(error)
 
-        alert('Ocorreu um erro ao validar o arquivo. Tente novamente.')
+        if(error.message && error.message === 'File structure is invalid.') {
+          alert('A estrutura do arquivo é inválida. É necessário possuir os campos `product_code` e `new_price`.')
+        } else {
+          alert('Ocorreu um erro ao validar o arquivo. Tente novamente.')
+        }
       }
     } else {
       alert('Selecione o arquivo .csv para validação.')

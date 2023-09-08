@@ -37,6 +37,15 @@ export class ProductsController {
           }
 
           const csvData = data.split('\n')
+          const [codeField, priceField]= csvData[0].split(',')
+
+          if(codeField !== 'product_code' || priceField!== 'new_price\r') {
+            return res.status(400).json({
+              ok: false,
+              message: 'File structure is invalid.'
+            })
+          }
+
           for (let i = 1; i < csvData.length; i++) {
             if (csvData[i] !== '') {
               const currentData = csvData[i].split(',')
