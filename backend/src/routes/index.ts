@@ -1,6 +1,6 @@
-import { Router } from "express";
+import { Router } from 'express'
 
-import { productsRouter } from "./productsRouter";
+import { productsRouter } from './productsRouter'
 
 export const router = Router()
 

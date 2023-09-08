@@ -1,6 +1,6 @@
-import { ProductsRepository } from "../repositories/ProductsRepositoy";
-import { ValidateProductUpdateService } from "./ValidateProductUpdateService";
-import { ValidationError } from "./errors/ValidationError";
+import { ProductsRepository } from '../repositories/ProductsRepositoy'
+import { ValidateProductUpdateService } from './ValidateProductUpdateService'
+import { ValidationError } from './errors/ValidationError'
 
 interface IUpdatePricesRequest {
   products: {

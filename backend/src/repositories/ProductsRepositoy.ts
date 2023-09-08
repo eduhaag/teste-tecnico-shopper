@@ -1,5 +1,5 @@
-import { knex } from "../database"
-import { Product } from "../model/Product"
+import { knex } from '../database'
+import { Product } from '../model/Product'
 
 interface UpdatePrice{
   code: number,

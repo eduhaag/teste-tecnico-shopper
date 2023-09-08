@@ -1,5 +1,5 @@
-import { ProductsRepository } from "../repositories/ProductsRepositoy";
-import { PacksRepository } from "../repositories/PacksRepository";
+import { ProductsRepository } from '../repositories/ProductsRepositoy'
+import { PacksRepository } from '../repositories/PacksRepository'
 
 export interface IValidateRequest {
   productId: number

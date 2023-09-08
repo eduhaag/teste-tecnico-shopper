@@ -1,6 +1,6 @@
-import { knex } from "../database"
-import { Pack } from "../model/Pack"
-import { Product } from "../model/Product"
+import { knex } from '../database'
+import { Pack } from '../model/Pack'
+import { Product } from '../model/Product'
 
 export class PacksRepository {
   private static TABLE = 'packs'

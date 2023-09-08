@@ -1,7 +1,7 @@
-import { ProductsRepository } from "../../repositories/ProductsRepositoy"
-import { PacksRepository } from "../../repositories/PacksRepository"
-import { ValidateProductUpdateService } from "../ValidateProductUpdateService"
-import { UpdatePricesService } from "../UpdatePricesService"
+import { ProductsRepository } from '../../repositories/ProductsRepositoy'
+import { PacksRepository } from '../../repositories/PacksRepository'
+import { ValidateProductUpdateService } from '../ValidateProductUpdateService'
+import { UpdatePricesService } from '../UpdatePricesService'
 
 export function makeUpdatePricesService() {
   const productsRepository = new ProductsRepository()

@@ -1,65 +1,65 @@
-import { Request, Response } from "express";
-import fs from "fs";
-import { ZodError, z } from "zod";
+import { Request, Response } from 'express'
+import fs from 'fs'
+import { ZodError, z } from 'zod'
 
-import { IValidateRequest } from "../Services/ValidateProductUpdateService";
-import { makeUpdatePricesService } from "../Services/factories/makeUpdatePricesService";
-import { makeValidateProductUpdateService } from "../Services/factories/makeValidateProductUpdateService";
-import { convertNumeric } from "../utils/convertNumeric";
-import { ValidationError } from "../Services/errors/ValidationError";
+import { IValidateRequest } from '../Services/ValidateProductUpdateService'
+import { makeUpdatePricesService } from '../Services/factories/makeUpdatePricesService'
+import { makeValidateProductUpdateService } from '../Services/factories/makeValidateProductUpdateService'
+import { convertNumeric } from '../utils/convertNumeric'
+import { ValidationError } from '../Services/errors/ValidationError'
 
 export class ProductsController {
   async checkProducts(req: Request, res: Response) {
-    const { file } = req;
+    const { file } = req
 
     if (!file) {
       return res.status(400).json({
         ok: false,
-        message: "No CSV file uploaded",
-      });
+        message: 'No CSV file uploaded',
+      })
     }
 
-    if (file.mimetype !== "text/csv") {
+    if (file.mimetype !== 'text/csv') {
       return res.status(400).json({
         ok: false,
-        message: "Invalid file format. Expected CSV",
-      });
+        message: 'Invalid file format. Expected CSV',
+      })
     }
 
-    const arrayFromCSV: IValidateRequest[] = [];
+    const arrayFromCSV: IValidateRequest[] = []
 
     try {
       await new Promise<void>((resolve, reject) => {
-        fs.readFile(file.path, "utf-8", (err, data) => {
+        fs.readFile(file.path, 'utf-8', (err, data) => {
           if (err) {
-            reject(err);
+            reject(err)
           }
 
-          const csvData = data.split("\n");
+          const csvData = data.split('\n')
           for (let i = 1; i < csvData.length; i++) {
-            if (csvData[i] !== "") {
-              const currentData = csvData[i].split(",");
+            if (csvData[i] !== '') {
+              const currentData = csvData[i].split(',')
 
               arrayFromCSV.push({
                 productId: convertNumeric(currentData[0]),
                 newPrice: convertNumeric(currentData[1]),
-              });
+              })
             }
           }
 
-          resolve();
-        });
-      });
+          resolve()
+        })
+      })
 
       fs.unlink(file.path, (error) => {
         if (error) {
-          console.log(`Falha ao excluir o arquivo ${file.filename} de /tmp.`);
+          console.log(`Falha ao excluir o arquivo ${file.filename} de /tmp.`)
         }
-      });
+      })
 
-      const validateUpdateService = makeValidateProductUpdateService();
+      const validateUpdateService = makeValidateProductUpdateService()
 
-      const checkedProducts = await validateUpdateService.execute(arrayFromCSV);
+      const checkedProducts = await validateUpdateService.execute(arrayFromCSV)
 
       const productsToResponse = checkedProducts.map((product) => {
         return {
@@ -68,10 +68,10 @@ export class ProductsController {
           oldPrice: product.oldPrice,
           newPrice: product.newPrice,
           errors: product.errors,
-        };
-      });
+        }
+      })
 
-      return res.json(productsToResponse);
+      return res.json(productsToResponse)
     } catch (error) {
       return res.status(500).json({
         ok: false,
@@ -88,23 +88,23 @@ export class ProductsController {
           newPrice: z.number(),
         })
       ),
-    });
+    })
 
     try {
-      const { products } = dataSchema.parse(req.body);
+      const { products } = dataSchema.parse(req.body)
 
       const productsToUpdate = products.map((product) => {
         return {
           productId: product.code,
           newPrice: product.newPrice,
-        };
-      });
+        }
+      })
 
-      const updateService = makeUpdatePricesService();
+      const updateService = makeUpdatePricesService()
 
-      await updateService.execute({ products: productsToUpdate });
+      await updateService.execute({ products: productsToUpdate })
 
-      return res.status(204).send();
+      return res.status(204).send()
     } catch (error) {
 
       if(error instanceof ZodError) {
@@ -119,7 +119,7 @@ export class ProductsController {
         return res.status(400).json({
           ok: false,
           message: error.message,
-        });
+        })
       }
 
       return res.status(500).json({
