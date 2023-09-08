@@ -28,9 +28,9 @@ export class UpdatePricesService {
       const {code, newPrice, cost, isPack} = product
   
       if(!isPack) {
-        await this.productsRepository.updatePrice({code, newPrice})
+        await this.productsRepository.updatePrice({code,sales_price: newPrice})
       } else {
-        await this.productsRepository.updatePrice({code, newPrice, cost})
+        await this.productsRepository.updatePrice({code, sales_price: newPrice, cost_price: cost})
       }
     })
   }

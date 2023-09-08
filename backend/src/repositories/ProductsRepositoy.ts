@@ -3,8 +3,8 @@ import { Product } from "../model/Product"
 
 interface UpdatePrice{
   code: number,
-  newPrice: number,
-  cost?: number
+  sales_price: number,
+  cost_price?: number
 }
 
 export class ProductsRepository  {
@@ -24,7 +24,7 @@ export class ProductsRepository  {
 
   public async updatePrice(data: UpdatePrice) {
     await knex(ProductsRepository.TABLE)
-      .where(data.code)
+      .where('code', data.code)
       .update(data)
   }
 }
