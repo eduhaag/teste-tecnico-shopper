@@ -7,8 +7,6 @@
 
 O back end da aplicação foi desenvolvido em Node com Typescript, subindo um servidor com utilizando Express.
 
-Busquei utilizar orientação a objetos e boas práticas para que a aplicação tenha fácil manutenção e escalabilidade.
-
 ### Documentação
 O back end possui as seguintes rotas:
 

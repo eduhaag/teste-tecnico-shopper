@@ -56,8 +56,11 @@ $ npm run dev
 
 ### Executando front end
 ```bash
+# Retorne ao diretório raiz
+$ cd ..
+
 # Acesse diretório `backend'
-$ cd backend
+$ cd frontend
 
 # Renomeie o arquivo `.env-example` para `.env` e preencha as informações de acesso ao banco de dados.
 
@@ -67,7 +70,7 @@ $ npm install
 # Rode o backend
 $ npm run dev
 
-# O servidor será executado em localhost, na porta informada no arquivo .env ou porta 3001.
+# O servidor será executado em localhost, conforme porta informada no terminal.
 .
 ```
 
@@ -85,9 +88,12 @@ $ npm run dev
 
 
 **Front End**
-- React;
+- React (v.18.2.0);
 - Typescript;
-- Vite - Para agilizar o processo de criação e configuração do projeto;
+- Vite - Para criação e configuração inicial do projeto;
+- styled-components - Para estilização;
+- Axios - Comunicação com o back end;
+- react-router-dom - Para gerenciamento de rotas. (Pensando em um futuro da aplicação)
 > Veja o arquivo [package.json](/frontend/package.json)
 
 
