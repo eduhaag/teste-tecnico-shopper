@@ -19,7 +19,7 @@ O projeto foi desenvolvido como teste técnico para Desenvolvedor Fullstack da S
 A aplicação consiste em uma ferramenta para um supermercado para atualização de preços em massa através de um arquivo .csv.
 Antes da atualização dos preços a aplicação exibe uma pré validação das regras de negócio e só permite a atualização caso todas as regras tenham sido cumpridas.
 
-Busquei desenvolver a aplicação utilizando boas práticas e orientação a objetos (no back end) para facilitar a manutenção e escalabilidade da aplicação
+O back end da aplicação foi desenvolvido utilizando orientação a objetos, já o front end foi desenvolvido utilizando componentes funcionais do React e na estilização busquei seguir algumas caracteristicas do site da própria Shopper.
 
 ## Rodando a aplicação
 Para rodar a aplicação é necessário possuir o Node previamente instalado.
