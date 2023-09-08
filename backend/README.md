@@ -5,7 +5,7 @@
   ## Back end
 </div>
 
-O back end da aplicação desenvolvido em Node com Typescript, subindo um servidor com utilizando Express.
+O back end da aplicação foi desenvolvido em Node com Typescript, subindo um servidor com utilizando Express.
 
 Busquei utilizar orientação a objetos e boas práticas para que a aplicação tenha fácil manutenção e escalabilidade.
 

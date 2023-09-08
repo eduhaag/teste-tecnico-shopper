@@ -1,27 +1,15 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  # Teste técnico para Desenvolvedor Full Stack Jr. para Shopper.com.br
 
-Currently, two official plugins are available:
+  ## Front end
+</div>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O front end da aplicação foi desenvolvido em React com Typescript, utilizando o Vite para configuração inicial do projeto.
 
-## Expanding the ESLint configuration
+Para estilização foi utilizado styled-components e para comunicação do a API do back end foi utilizado o Axios.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Layout
+O layout criado foi pensado para ser uma tela simples porém seguindo algumas caracteristicas do site da Shopper.com.br.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+![Layout da aplicação](./.github/layout.png)
