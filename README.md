@@ -62,7 +62,7 @@ $ cd ..
 # Acesse diretório `backend'
 $ cd frontend
 
-# Renomeie o arquivo `.env-example` para `.env` e preencha as informações de acesso ao banco de dados.
+# Renomeie o arquivo `.env-example` para `.env` e preencha a URL para acesso do back end
 
 # Instale as dependências
 $ npm install
