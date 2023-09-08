@@ -139,16 +139,13 @@ export class ValidateProductUpdateService {
         }
       })
 
-      if(composeItensWithOutUpdate.length === 0) {
-        if(product.newPrice < componentsValues.cost) {
-          product.errors.push('Novo preço abaixo do preço de custo.')
-        }
+      product.cost = componentsValues.cost
 
+      if(composeItensWithOutUpdate.length === 0) {
         if(product.newPrice !== componentsValues.price) {
           product.errors.push('O novo preço é diferente da soma do preço dos componentes do pack.')
         }
-
-        product.cost = componentsValues.cost
+        
       } else {
         const msg = composeItensWithOutUpdate.length === 1 ? 'o produto' : 'os produtos'
 

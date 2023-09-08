@@ -73,6 +73,7 @@ export class ProductsController {
 
       return res.json(productsToResponse)
     } catch (error) {
+      console.error(error)
       return res.status(500).json({
         ok: false,
         message: 'Internal server error.'
@@ -122,6 +123,7 @@ export class ProductsController {
         })
       }
 
+      console.error(error)
       return res.status(500).json({
         ok: false,
         message: 'Internal server error.'
