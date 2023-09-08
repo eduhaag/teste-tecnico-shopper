@@ -1,5 +1,6 @@
-import { currencyFormat } from "../../utils/currencyFormat";
-import { ListContainer } from "./styles";
+import { ListContainer } from './styles'
+
+import { currencyFormat } from '../../utils/currencyFormat'
 
 export interface Product {
   code: number,

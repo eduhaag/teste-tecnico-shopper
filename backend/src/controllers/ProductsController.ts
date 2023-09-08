@@ -7,6 +7,7 @@ import { makeUpdatePricesService } from '../Services/factories/makeUpdatePricesS
 import { makeValidateProductUpdateService } from '../Services/factories/makeValidateProductUpdateService'
 import { convertNumeric } from '../utils/convertNumeric'
 import { ValidationError } from '../Services/errors/ValidationError'
+import path from 'path'
 
 export class ProductsController {
   async checkProducts(req: Request, res: Response) {

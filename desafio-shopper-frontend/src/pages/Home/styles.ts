@@ -1,8 +1,15 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const HomeContainer = styled.div`
   .description {
     font-size: 1.3rem;
+    line-height: 1.8rem;
+  }
+
+  a {
+    color: ${({theme}) => theme["color-secondary"]};
+    text-decoration: underline;
+    cursor: pointer;
   }
 
   form {

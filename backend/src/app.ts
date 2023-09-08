@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import path from 'path'
 
 dotenv.config()
 
 const app = express()
+
 app.use(express.json())
 app.use(cors())
 

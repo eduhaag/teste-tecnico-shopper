@@ -1,10 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
-import {Button} from '../../components/Button'
 
-import { HomeContainer } from './styles'
 import { api } from '../../libs/axios'
+
+import {Button} from '../../components/Button'
 import { LoadingSpinner } from '../../components/LoadingSpinner'
 import { Product, ProductsList } from '../../components/ProductsList'
+import { HomeContainer } from './styles'
 
 
 
@@ -83,7 +84,7 @@ export function Home() {
     <HomeContainer>
       <div className="description">
         <p className='description'>Selecione o arquivo para a atualização de preços. </p>
-        <span>O arquivo deve ter formato .csv</span>
+        <span>O arquivo deve possuir a extensão .csv.</span>
       </div>
       
       <form onSubmit={handleFormSubmit}>

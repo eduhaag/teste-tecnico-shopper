@@ -1,7 +1,7 @@
-import { HeaderContainer } from './styles'
-
-import Logo from '../../assets/images/logo.png'
 import { Link } from 'react-router-dom'
+
+import { HeaderContainer } from './styles'
+import Logo from '../../assets/images/logo.png'
 
 export function Header () {
   return (
